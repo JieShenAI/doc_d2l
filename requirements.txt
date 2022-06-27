@@ -4,3 +4,4 @@ sphinx-book-theme>=0.2.0
 sphinx-markdown-tables>=0.0.15
 sphinx-rtd-theme>=1.0.0
 tables>=3.6.1
+myst_parser>=0.18.0
