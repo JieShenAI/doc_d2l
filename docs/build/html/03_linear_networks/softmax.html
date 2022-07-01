@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>softmax &mdash; Note of d2l One Piece 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="Chapter5 计算" href="../05_deep_learning_computation/index.html" />
+    <link rel="prev" title="Chapter3 线性网络" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Note of d2l
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="在文档中搜索" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../02_chapter_preliminaries/index.html">Chapter2 预备知识</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Chapter3 线性网络</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">softmax</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">损失函数</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">softmax回归</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">分类问题</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">损失</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../05_deep_learning_computation/index.html">Chapter5 计算</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Note of d2l</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Chapter3 线性网络</a> &raquo;</li>
+      <li>softmax</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/03_linear_networks/softmax.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="softmax">
+<h1>softmax<a class="headerlink" href="#softmax" title="永久链接至标题"></a></h1>
+<p>在这一章的代码中</p>
+<ul class="simple">
+<li><p>有计算分类精确度的函数</p></li>
+<li><p>有 Accumulator 类</p></li>
+</ul>
+<p>只关心，正确分类类别</p>
+<section id="id1">
+<h2>损失函数<a class="headerlink" href="#id1" title="永久链接至标题"></a></h2>
+<p>接下来，我们需要一个损失函数来度量预测的效果。
+我们将使用最大似然估计，这与在线性回归
+（ :numref:<code class="docutils literal notranslate"><span class="pre">subsec_normal_distribution_and_squared_loss</span></code>）
+中的方法相同</p>
+</section>
+</section>
+<section id="id2">
+<h1>softmax回归<a class="headerlink" href="#id2" title="永久链接至标题"></a></h1>
+<section id="id3">
+<h2>分类问题<a class="headerlink" href="#id3" title="永久链接至标题"></a></h2>
+<p>:label:<code class="docutils literal notranslate"><span class="pre">subsec_classification-problem</span></code></p>
+<p>我们从一个图像分类问题开始。
+假设每次输入是一个$2\times2$的灰度图像。
+我们可以用一个标量表示每个像素值，每个图像对应四个特征$x_1, x_2, x_3, x_4$。
+此外，假设每个图像属于类别“猫”，“鸡”和“狗”中的一个。</p>
+<p>统计学家很早以前就发明了一种表示分类数据的简单方法：<em>独热编码</em>（one-hot encoding）。
+独热编码是一个向量，它的分量和类别一样多。
+类别对应的分量设置为1，其他所有分量设置为0。
+在我们的例子中，标签$y$将是一个三维向量，
+其中$(1, 0, 0)$对应于“猫”、$(0, 1, 0)$对应于“鸡”、$(0, 0, 1)$对应于“狗”：</p>
+<p>$$y \in {(1, 0, 0), (0, 1, 0), (0, 0, 1)}.$$</p>
+</section>
+<section id="id4">
+<h2>损失<a class="headerlink" href="#id4" title="永久链接至标题"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">loss</span> <span class="pre">=</span> <span class="pre">nn.CrossEntropyLoss(reduction='none')</span></code></p>
+<p>在<code class="docutils literal notranslate"><span class="pre">train_epoch_ch3()</span></code>中:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">l</span> <span class="pre">=</span> <span class="pre">loss(y_hat,</span> <span class="pre">y)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">y_hat</span> <span class="pre">=</span> <span class="pre">net(X)</span></code></p>
+<p>y 不是 ont-hot编码的, 而是如下格式</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tensor</span><span class="p">([</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span><span class="o">...</span><span class="p">])</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l.mean().backward()</span></code></p>
+<p>softmax的损失需要求均值之后，再反向传播</p>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Chapter3 线性网络" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="../05_deep_learning_computation/index.html" class="btn btn-neutral float-right" title="Chapter5 计算" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022, J.Shen.</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

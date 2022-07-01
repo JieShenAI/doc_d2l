@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Autograd &mdash; Note of d2l One Piece 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="概率" href="probability.html" />
+    <link rel="prev" title="线性代数" href="linear-algebra.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Note of d2l
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="在文档中搜索" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Chapter2 预备知识</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="linear-algebra.html">线性代数</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Autograd</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">分离计算</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html">概率</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lookup_api.html">API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../03_linear_networks/index.html">Chapter3 线性网络</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05_deep_learning_computation/index.html">Chapter5 计算</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Note of d2l</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Chapter2 预备知识</a> &raquo;</li>
+      <li>Autograd</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/02_chapter_preliminaries/autograd.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="autograd">
+<h1>Autograd<a class="headerlink" href="#autograd" title="永久链接至标题"></a></h1>
+<ul>
+<li><p>设置某个Tensor需要梯度</p>
+<p><code class="docutils literal notranslate"><span class="pre">x.requires_grad_(True)</span></code></p>
+</li>
+<li><p>梯度清0</p>
+<p><code class="docutils literal notranslate"><span class="pre">x.grad.zero_()</span></code></p>
+</li>
+<li><p>反向传播</p>
+<p><code class="docutils literal notranslate"><span class="pre">y.sum().backward()</span></code></p>
+</li>
+</ul>
+<blockquote>
+<div><p>大多数，对loss函数的常数进行反向传播；</p>
+<p>当<code class="docutils literal notranslate"><span class="pre">y</span></code>不是标量时，向量<code class="docutils literal notranslate"><span class="pre">y</span></code>关于向量<code class="docutils literal notranslate"><span class="pre">x</span></code>的导数的最自然解释是一个矩阵。</p>
+</div></blockquote>
+<section id="id1">
+<h2>分离计算<a class="headerlink" href="#id1" title="永久链接至标题"></a></h2>
+<p>有时，我们希望[<strong>将某些计算移动到记录的计算图之外</strong>]。</p>
+<p>例如，假设<code class="docutils literal notranslate"><span class="pre">y</span></code>是作为<code class="docutils literal notranslate"><span class="pre">x</span></code>的函数计算的，而<code class="docutils literal notranslate"><span class="pre">z</span></code>则是作为<code class="docutils literal notranslate"><span class="pre">y</span></code>和<code class="docutils literal notranslate"><span class="pre">x</span></code>的函数计算的。</p>
+<p>想象一下，我们想计算<code class="docutils literal notranslate"><span class="pre">z</span></code>关于<code class="docutils literal notranslate"><span class="pre">x</span></code>的梯度，但由于某种原因，我们希望将<code class="docutils literal notranslate"><span class="pre">y</span></code>视为一个常数，</p>
+<p>并且只考虑到<code class="docutils literal notranslate"><span class="pre">x</span></code>在<code class="docutils literal notranslate"><span class="pre">y</span></code>被计算后发挥的作用。</p>
+<p>在这里，我们可以分离<code class="docutils literal notranslate"><span class="pre">y</span></code>来返回一个新变量<code class="docutils literal notranslate"><span class="pre">u</span></code>，该变量与<code class="docutils literal notranslate"><span class="pre">y</span></code>具有相同的值，</p>
+<p>但丢弃计算图中如何计算<code class="docutils literal notranslate"><span class="pre">y</span></code>的任何信息。</p>
+<p>换句话说，梯度不会向后流经<code class="docutils literal notranslate"><span class="pre">u</span></code>到<code class="docutils literal notranslate"><span class="pre">x</span></code>。</p>
+<p>因此，下面的反向传播函数计算<code class="docutils literal notranslate"><span class="pre">z=u*x</span></code>关于<code class="docutils literal notranslate"><span class="pre">x</span></code>的偏导数，同时将<code class="docutils literal notranslate"><span class="pre">u</span></code>作为常数处理，</p>
+<p>而不是<code class="docutils literal notranslate"><span class="pre">z=x*x*x</span></code>关于<code class="docutils literal notranslate"><span class="pre">x</span></code>的偏导数。</p>
+<ul>
+<li><p>detach</p>
+<p>当前计算阶段不考虑梯度</p>
+<p><code class="docutils literal notranslate"><span class="pre">y.detach()</span></code></p>
+</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">u</span> <span class="o">*</span> <span class="n">x</span>
+<span class="n">z</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="n">x</span><span class="o">.</span><span class="n">grad</span> <span class="o">==</span> <span class="n">u</span>
+</pre></div>
+</div>
+<p>u是y的一个拷贝，u不计算梯度，但x的梯度依然保留在y里面。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="linear-algebra.html" class="btn btn-neutral float-left" title="线性代数" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="probability.html" class="btn btn-neutral float-right" title="概率" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022, J.Shen.</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

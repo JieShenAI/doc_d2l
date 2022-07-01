@@ -10,7 +10,9 @@ Welcome to Note of d2l's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   00_read/index
+   02_chapter_preliminaries/index
+   03_linear_networks/index
+   05_deep_learning_computation/index
 
 
 

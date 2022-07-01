@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>线性代数 &mdash; Note of d2l One Piece 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="Autograd" href="autograd.html" />
+    <link rel="prev" title="Chapter2 预备知识" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Note of d2l
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="在文档中搜索" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Chapter2 预备知识</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">线性代数</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">常见的方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">降维</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">积</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">点积</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">矩阵向量积</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">矩阵乘法</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">范数</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#l1">L1范数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lp">Lp范数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">范数和目标</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">关于线性代数的更多信息</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">小结</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">练习</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autograd.html">Autograd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html">概率</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lookup_api.html">API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../03_linear_networks/index.html">Chapter3 线性网络</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05_deep_learning_computation/index.html">Chapter5 计算</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Note of d2l</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Chapter2 预备知识</a> &raquo;</li>
+      <li>线性代数</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/02_chapter_preliminaries/linear-algebra.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>线性代数<a class="headerlink" href="#id1" title="永久链接至标题"></a></h1>
+<p>torch.Tensor的复制是 <code class="docutils literal notranslate"><span class="pre">xxx.clone()</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tensor</span><span class="p">([[</span> <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">2.</span><span class="p">,</span>  <span class="mf">3.</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mf">4.</span><span class="p">,</span>  <span class="mf">5.</span><span class="p">,</span>  <span class="mf">6.</span><span class="p">,</span>  <span class="mf">7.</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mf">8.</span><span class="p">,</span>  <span class="mf">9.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">11.</span><span class="p">]])</span>
+</pre></div>
+</div>
+<section id="id2">
+<h2>常见的方法<a class="headerlink" href="#id2" title="永久链接至标题"></a></h2>
+<p>假设A是tensor</p>
+<blockquote>
+<div><p>A.mean()</p>
+</div></blockquote>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>方法</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>sum()</p></td>
+<td><p>求和</p></td>
+</tr>
+<tr class="row-odd"><td><p>mean()</p></td>
+<td><p>均值</p></td>
+</tr>
+<tr class="row-even"><td><p>var()</p></td>
+<td><p>方差</p></td>
+</tr>
+<tr class="row-odd"><td><p>numel()</p></td>
+<td><p>元素个数</p></td>
+</tr>
+<tr class="row-even"><td><p>cumsum()</p></td>
+<td><p>累计总和</p></td>
+</tr>
+<tr class="row-odd"><td><p>norm()</p></td>
+<td><p>范数</p></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p>axis</p>
+<ul class="simple">
+<li><p>A.mean(axis=0)</p></li>
+</ul>
+</li>
+<li><p>sum / mean</p>
+<ul>
+<li><p>按指定维度求和/均值</p>
+<p>A.sum(axis=0)；A.mean(axis=0)</p>
+</li>
+<li><p>sum求和，保留维度</p>
+<p>A.sum(axis=1, keepdims=True)</p>
+</li>
+</ul>
+</li>
+<li><p>cumsum</p>
+<p><code class="docutils literal notranslate"><span class="pre">x.cumsum(axis=0)</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tensor</span><span class="p">([[</span> <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span>  <span class="mf">2.</span><span class="p">,</span>  <span class="mf">3.</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mf">4.</span><span class="p">,</span>  <span class="mf">6.</span><span class="p">,</span>  <span class="mf">8.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">12.</span><span class="p">,</span> <span class="mf">15.</span><span class="p">,</span> <span class="mf">18.</span><span class="p">,</span> <span class="mf">21.</span><span class="p">]])</span>
+</pre></div>
+</div>
+<p>当前行的值，会逐渐传递给下一行去累加。</p>
+</li>
+</ul>
+</section>
+<section id="id3">
+<h2>降维<a class="headerlink" href="#id3" title="永久链接至标题"></a></h2>
+<p>可以[<strong>指定张量沿哪一个轴来通过求和降低维度</strong>]。以矩阵为例，为了通过求和所有行的元素来降维（轴0），我们可以在调用函数时指定<code class="docutils literal notranslate"><span class="pre">axis=0</span></code>。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tensor</span><span class="p">([</span><span class="mf">12.</span><span class="p">,</span> <span class="mf">15.</span><span class="p">,</span> <span class="mf">18.</span><span class="p">,</span> <span class="mf">21.</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>同样的<code class="docutils literal notranslate"><span class="pre">axis=1</span></code>将通过汇总所有列的元素降维（轴1）。因此，输入轴1的维数在输出形状中消失。</p>
+</section>
+<section id="id4">
+<h2>积<a class="headerlink" href="#id4" title="永久链接至标题"></a></h2>
+<section id="id5">
+<h3>点积<a class="headerlink" href="#id5" title="永久链接至标题"></a></h3>
+<p>Dot Product</p>
+<p>给定两个向量$\mathbf{x},\mathbf{y}\in\mathbb{R}^d$，它们的<strong>点积</strong>（dot product）$\mathbf{x}^\top\mathbf{y}$</p>
+<p>（或$\langle\mathbf{x},\mathbf{y}\rangle$）是相同位置的按元素乘积的<strong>和</strong>：$\mathbf{x}^\top \mathbf{y} = \sum_{i=1}^{d} x_i y_i$。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+
+<span class="n">torch</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="c1"># or</span>
+<span class="n">a</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+<span class="c1"># tensor(20.)</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h3>矩阵向量积<a class="headerlink" href="#id6" title="永久链接至标题"></a></h3>
+<p>矩阵和向量的乘积</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">a,b</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">tensor</span><span class="p">([[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]]),</span>
+ <span class="n">tensor</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]))</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>mv: matrix vector</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h3>矩阵乘法<a class="headerlink" href="#id7" title="永久链接至标题"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">torch.mm()</span></code></p>
+</section>
+</section>
+<section id="id8">
+<h2>范数<a class="headerlink" href="#id8" title="永久链接至标题"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">norm</span></code></p>
+<p>一个向量的范数，告诉我们一个向量有多大；不是维度，而是分量的大小；</p>
+<p>第一个性质是：如果我们按常数因子$\alpha$缩放向量的所有元素，
+其范数也会按相同常数因子的<em>绝对值</em>缩放：</p>
+<p>$$f(\alpha \mathbf{x}) = |\alpha| f(\mathbf{x}).$$</p>
+<p>第二个性质是我们熟悉的三角不等式:</p>
+<p>$$f(\mathbf{x} + \mathbf{y}) \leq f(\mathbf{x}) + f(\mathbf{y}).$$</p>
+<p>第三个性质简单地说范数必须是非负的:</p>
+<p>$$f(\mathbf{x}) \geq 0.$$</p>
+<p>这是有道理的。因为在大多数情况下，任何东西的最小的<em>大小</em>是0。
+最后一个性质要求范数最小为0，当且仅当向量全由0组成。</p>
+<p>假设$n$维向量$\mathbf{x}$中的元素是$x_1,\ldots,x_n$，其[<strong>$L_2$<em>范数</em>是向量元素平方和的平方根：</strong>]</p>
+<p>(<strong>$$|\mathbf{x}|<em>2 = \sqrt{\sum</em>{i=1}^n x_i^2},$$</strong>)</p>
+<p>其中，在$L_2$范数中常常省略下标$2$，也就是说$|\mathbf{x}|$等同于$|\mathbf{x}|_2$。</p>
+<p>在代码中，我们可以按如下方式计算向量的$L_2$范数。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">u</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.0</span><span class="p">])</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+
+<span class="c1"># 5</span>
+</pre></div>
+</div>
+<section id="l1">
+<h3>L1范数<a class="headerlink" href="#l1" title="永久链接至标题"></a></h3>
+<p>在深度学习中，我们更经常地使用$L_2$范数的平方。
+你还会经常遇到[<strong>$L_1$范数，它表示为向量元素的绝对值之和：</strong>]</p>
+<p>(<strong>$$|\mathbf{x}|<em>1 = \sum</em>{i=1}^n \left|x_i \right|.$$</strong>)</p>
+<p>与$L_2$范数相比，$L_1$范数受异常值的影响较小。
+为了计算$L_1$范数，我们将绝对值函数和按元素求和组合起来。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="lp">
+<h3>Lp范数<a class="headerlink" href="#lp" title="永久链接至标题"></a></h3>
+<p>$L_2$范数和$L_1$范数都是更一般的$L_p$范数的特例：</p>
+<p>$$|\mathbf{x}|<em>p = \left(\sum</em>{i=1}^n \left|x_i \right|^p \right)^{1/p}.$$</p>
+<p>类似于向量的$L_2$范数，[<strong>矩阵</strong>]$\mathbf{X} \in \mathbb{R}^{m \times n}$(<strong>的<em>Frobenius范数</em>（Frobenius norm）是矩阵元素平方和的平方根：</strong>)</p>
+<p>(<strong>$$|\mathbf{X}|<em>F = \sqrt{\sum</em>{i=1}^m \sum_{j=1}^n x_{ij}^2}.$$</strong>)</p>
+<p>Frobenius范数满足向量范数的所有性质，它就像是矩阵形向量的$L_2$范数。
+调用以下函数将计算矩阵的Frobenius范数。</p>
+</section>
+<section id="id9">
+<h3>范数和目标<a class="headerlink" href="#id9" title="永久链接至标题"></a></h3>
+<p>:label:<code class="docutils literal notranslate"><span class="pre">subsec_norms_and_objectives</span></code></p>
+<p>在深度学习中，我们经常试图解决优化问题：
+<em>最大化</em>分配给观测数据的概率;
+<em>最小化</em>预测和真实观测之间的距离。
+用向量表示物品（如单词、产品或新闻文章），以便最小化相似项目之间的距离，最大化不同项目之间的距离。
+目标，或许是深度学习算法最重要的组成部分（除了数据），通常被表达为范数。</p>
+</section>
+</section>
+<section id="id10">
+<h2>关于线性代数的更多信息<a class="headerlink" href="#id10" title="永久链接至标题"></a></h2>
+<p>线性代数还有很多，其中很多数学对于机器学习非常有用。
+例如，矩阵可以分解为因子，这些分解可以显示真实世界数据集中的低维结构。
+机器学习的整个子领域都侧重于使用矩阵分解及其向高阶张量的泛化，来发现数据集中的结构并解决预测问题。
+我们相信，一旦你开始动手尝试并在真实数据集上应用了有效的机器学习模型，你会更倾向于学习更多数学。</p>
+<p>如果你渴望了解有关线性代数的更多信息，你可以参考<a class="reference external" href="https://d2l.ai/chapter_appendix-mathematics-for-deep-learning/geometry-linear-algebraic-ops.html">线性代数运算的在线附录</a>或其他优秀资源 :cite:<code class="docutils literal notranslate"><span class="pre">Strang.1993,Kolter.2008,Petersen.Pedersen.ea.2008</span></code>。</p>
+</section>
+<section id="id11">
+<h2>小结<a class="headerlink" href="#id11" title="永久链接至标题"></a></h2>
+<ul class="simple">
+<li><p>标量、向量、矩阵和张量是线性代数中的基本数学对象。</p></li>
+<li><p>向量泛化自标量，矩阵泛化自向量。</p></li>
+<li><p>标量、向量、矩阵和张量分别具有零、一、二和任意数量的轴。</p></li>
+<li><p>一个张量可以通过<code class="docutils literal notranslate"><span class="pre">sum</span></code>和<code class="docutils literal notranslate"><span class="pre">mean</span></code>沿指定的轴降低维度。</p></li>
+<li><p>两个矩阵的按元素乘法被称为他们的Hadamard积。它与矩阵乘法不同。</p></li>
+<li><p>在深度学习中，我们经常使用范数，如$L_1$范数、$L_2$范数和Frobenius范数。</p></li>
+<li><p>我们可以对标量、向量、矩阵和张量执行各种操作。</p></li>
+</ul>
+</section>
+<section id="id12">
+<h2>练习<a class="headerlink" href="#id12" title="永久链接至标题"></a></h2>
+<ol class="arabic simple">
+<li><p>证明一个矩阵$\mathbf{A}$的转置的转置是$\mathbf{A}$，即$(\mathbf{A}^\top)^\top = \mathbf{A}$。</p></li>
+<li><p>给出两个矩阵$\mathbf{A}$和$\mathbf{B}$，证明“它们转置的和”等于“它们和的转置”，即$\mathbf{A}^\top + \mathbf{B}^\top = (\mathbf{A} + \mathbf{B})^\top$。</p></li>
+<li><p>给定任意方阵$\mathbf{A}$，$\mathbf{A} + \mathbf{A}^\top$总是对称的吗?为什么?</p></li>
+<li><p>我们在本节中定义了形状$(2,3,4)$的张量<code class="docutils literal notranslate"><span class="pre">X</span></code>。<code class="docutils literal notranslate"><span class="pre">len(X)</span></code>的输出结果是什么？</p></li>
+<li><p>对于任意形状的张量<code class="docutils literal notranslate"><span class="pre">X</span></code>,<code class="docutils literal notranslate"><span class="pre">len(X)</span></code>是否总是对应于<code class="docutils literal notranslate"><span class="pre">X</span></code>特定轴的长度?这个轴是什么?</p></li>
+<li><p>运行<code class="docutils literal notranslate"><span class="pre">A/A.sum(axis=1)</span></code>，看看会发生什么。你能分析原因吗？</p></li>
+<li><p>考虑一个具有形状$(2,3,4)$的张量，在轴0、1、2上的求和输出是什么形状?</p></li>
+<li><p>为<code class="docutils literal notranslate"><span class="pre">linalg.norm</span></code>函数提供3个或更多轴的张量，并观察其输出。对于任意形状的张量这个函数计算得到什么?</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Chapter2 预备知识" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="autograd.html" class="btn btn-neutral float-right" title="Autograd" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022, J.Shen.</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
